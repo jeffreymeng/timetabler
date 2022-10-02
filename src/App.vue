@@ -1,53 +1,40 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
-import TheWelcome from "./components/TheWelcome.vue";
+import draggable from "vuedraggable";
+import { ref } from "vue";
+
+const drag = ref(false);
+const myArray = ref([
+  { name: "John", id: 0 },
+  { name: "Joao", id: 1 },
+  { name: "Jean", id: 2 },
+]);
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="./assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div class="h-full flex">
+    <div className="w-96">
+      My Sidebar
+      <draggable
+        v-model="myArray"
+        group="people"
+        @start="drag = true"
+        @end="drag = false"
+        item-key="id"
+        ghost-class="ghost"
+      >
+        <template #item="{ element }">
+          <div>{{ element.name }}</div>
+        </template>
+      </draggable>
     </div>
-  </header>
 
-  <main>
-    <TheWelcome />
-  </main>
+    <div class="flex-1">My content</div>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
 }
 </style>
