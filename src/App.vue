@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import draggable from "vuedraggable";
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 
 const myArray = ref([
   { name: "10355 Tonita Way, Cupertino, CA 95014", id: 0 },
@@ -8,7 +8,15 @@ const myArray = ref([
   { name: "12345 Rainbow Drive, Cupertino, CA 95014", id: 2 },
 ]);
 
+// lmao idk if this actually works
+const lastAddedInput = ref<HTMLInputElement | null>(null);
+
 const center = { lat: 51.093048, lng: 6.84212 };
+
+const handleAddDestination = () => {
+  myArray.value.push({ name: "", id: Math.random() });
+  nextTick(() => lastAddedInput.value!.focus());
+};
 </script>
 
 <template>
@@ -26,10 +34,19 @@ const center = { lat: 51.093048, lng: 6.84212 };
             <input
               v-model="element.name"
               class="p-2 rounded w-full border border-gray-200"
+              ref="lastAddedInput"
             />
           </div>
         </template>
       </draggable>
+      <div class="ml-10">
+        <button
+          className="p-2 font-medium text-gray-600 hover:text-black"
+          @click="handleAddDestination()"
+        >
+          Add destination
+        </button>
+      </div>
     </div>
 
     <div class="flex-1">
