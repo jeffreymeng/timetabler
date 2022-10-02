@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Loader } from "@googlemaps/js-api-loader";
 import draggable from "vuedraggable";
-import { nextTick, ref } from "vue";
+import { nextTick, ref, watchEffect } from "vue";
 import Lock from "./components/Lock.vue";
 import { onMounted } from "vue";
 import PlacesAutocomplete from "./components/PlacesAutocomplete.vue";
@@ -16,6 +16,7 @@ const stops = ref([
   { name: "Stinson Beach, CA", id: 6, locked: false },
   { name: "Oakland, CA", id: 7, locked: true },
 ]);
+const departureTime = ref("");
 
 const update = ref();
 
@@ -170,7 +171,7 @@ onMounted(() => initMap());
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="stops" item-key="id" ghost-class="ghost">
         <template #item="{ element }">
-          <div class="px-2 my-2 flex items-start">
+          <div class="px-2 my-2 mr-2 flex items-start">
             <div
               class="h-10 w-10 flex items-center justify-center text-gray-400"
             >
@@ -195,6 +196,25 @@ onMounted(() => initMap());
         >
           Optimize Route
         </button>
+      </div>
+
+      <div class="ml-10 mr-2">
+        <div class="p-2">
+          <label
+            for="departureTime"
+            class="block text-sm font-medium text-gray-700"
+            >Departure Time</label
+          >
+          <div class="mt-1">
+            <input
+              type="time"
+              name="departureTime"
+              id="departureTime"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              v-model="departureTime"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
