@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, defineExpose, ref, nextTick } from "vue";
 import {
   Combobox,
   ComboboxButton,
@@ -17,9 +17,10 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
 
-// const handleEvent = () => {
-//   emit("update:modelValue", !props.modelValue);
-// };
+const inputRef = ref(null);
+defineExpose({
+  inputRef,
+});
 
 const predictionResults = ref<string[]>([]);
 
@@ -52,8 +53,8 @@ const handleChange = (event: Event) => {
 <template>
   <Combobox
     as="div"
-    :value="props.modelValue"
-    @input="$emit('update:modelValue', $event.target.value)"
+    :modelValue="props.modelValue"
+    @update:modelValue="(x) => $emit('update:modelValue', x)"
     class="w-full"
   >
     <div class="w-full relative">
@@ -61,6 +62,7 @@ const handleChange = (event: Event) => {
         class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
         @change="handleChange"
         :display-value="(x) => x ?? ''"
+        ref="inputRef"
       />
       <ComboboxButton
         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"

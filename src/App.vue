@@ -15,13 +15,15 @@ const stops = ref([
 const update = ref();
 
 // lmao idk if this actually works
-const lastAddedInput = ref<HTMLInputElement | null>(null);
+const lastAddedInput = ref<{ inputRef: { value: HTMLInputElement } } | null>(
+  null
+);
 
 const center = { lat: 51.093048, lng: 6.84212 };
 
 const handleAddDestination = () => {
   stops.value.push({ name: "", id: Math.random(), locked: false });
-  nextTick(() => lastAddedInput.value!.focus());
+  nextTick(() => lastAddedInput.value!.inputRef.el.focus());
 };
 
 function initMap() {
