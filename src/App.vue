@@ -6,9 +6,14 @@ import Lock from "./components/Lock.vue";
 import { onMounted } from "vue";
 
 const stops = ref([
-  { name: "10355 Tonita Way, Cupertino, CA 95014", id: 0, locked: true },
-  { name: "22562 Alcade Road, Cupertino, CA 95014", id: 1, locked: false },
-  { name: "12345 Rainbow Drive, Cupertino, CA 95014", id: 2, locked: true },
+  { name: "Cupertino, CA", id: 0, locked: true },
+  { name: "Fremont, CA", id: 1, locked: false },
+  { name: "San Jose, CA", id: 2, locked: false },
+  { name: "San Fransisco, CA", id: 3, locked: true },
+  { name: "Vallejo, CA", id: 4, locked: false },
+  { name: "San Rafael, CA", id: 5, locked: false },
+  { name: "Stinson Beach, CA", id: 6, locked: false },
+  { name: "Oakland, CA", id: 7, locked: true },
 ]);
 
 const update = ref();
@@ -24,6 +29,10 @@ const handleAddDestination = () => {
 };
 
 function initMap() {
+  // basically, we split up the destinations into 'groups', where groups contain stops which need their order
+  // to be optimized within the groups. We then optimize the order of each of the groups individually,
+  // before getting the directions to the entire route in the optimized order. This is because google
+  // maps doesn't support waypoints with some fixed orders and some orders to be optimized.
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -34,14 +43,19 @@ function initMap() {
    * @param stops - An array of stops.
    * @returns result - An array with the index of each stop from `stops`, ordered in the optimal order.
    */
-  async function optimizeOrder(stops: string[]): Promise<number[]> {
+  async function optimizeOrder(
+    start: string,
+    stops: string[],
+    destination: string
+  ): Promise<number[]> {
+    console.log(start, stops, destination);
     return new Promise((res, rej) => {
       directionsService.route(
         {
-          origin: stops[0],
-          waypoints: stops.slice(1, -1).map((stop) => ({ location: stop })),
+          origin: start,
+          waypoints: stops.map((stop) => ({ location: stop })),
           optimizeWaypoints: true,
-          destination: stops[stops.length - 1],
+          destination: destination,
           travelMode: google.maps.TravelMode.DRIVING,
           drivingOptions: {
             departureTime: new Date(Date.now() + 24 * 60 * 1000), // for the time N milliseconds from now.
@@ -84,35 +98,46 @@ function initMap() {
               i,
               arr
             ) => {
-              if (i === 0 || i === arr.length - 1 || locked) {
+              console.log(acc, name)
+              // create a new group if it's locked or if the previous element is locked.
+              if (
+                i === 0 ||
+                i === arr.length - 1 ||
+                locked ||
+                arr[i - 1].locked
+              ) {
                 return [...acc, [{ name, i }]] as {
                   name: string;
                   i: number;
                 }[][];
               }
-              return [...acc.slice(0, -1), [...acc.slice(-1), { name, i }]] as {
+              return [...acc.slice(0, -1), [...acc.at(-1)!, { name, i }]] as {
                 name: string;
                 i: number;
               }[][];
             },
             []
           )
-          .map((arr) => {
-            if (arr.length > 1) {
-              return optimizeOrder(arr.map((el) => el.name)).then((order) =>
-                order.map((i) => arr[i].i)
-              );
+          .map((arr, i, bigArr) => {
+            if (arr.length > 1 && i !== 0 && i < bigArr.length - 1) {
+              return optimizeOrder(
+                bigArr[i - 1].at(-1)!.name,
+                arr.map((el) => el.name),
+                bigArr[i + 1][0].name
+              ).then((order) => order.map((i) => arr[i].i));
             }
             return Promise.resolve(arr[0].i);
           })
       )
     ).flat();
 
-    const optimizedStops = optimizedOrder.map(i => stops.value[i].name);
-
+    const optimizedStops = optimizedOrder.map((i) => stops.value[i].name);
+    console.log(optimizedStops);
     const request = {
       origin: optimizedStops[0],
-      waypoints: optimizedStops.slice(1, -1),
+      waypoints: optimizedStops
+        .slice(1, -1)
+        .map((stop) => ({ location: stop })),
       optimizeWaypoints: false,
       destination: optimizedStops.at(-1),
       travelMode: google.maps.TravelMode.DRIVING,
