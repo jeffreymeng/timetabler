@@ -4,10 +4,12 @@ import { ref } from "vue";
 
 const drag = ref(false);
 const myArray = ref([
-  { name: "John", id: 0 },
-  { name: "Joao", id: 1 },
-  { name: "Jean", id: 2 },
+  { name: "Jeffery", id: 0 },
+  { name: "Nathan", id: 1 },
+  { name: "Jason", id: 2 },
 ]);
+
+const center = {lat: 51.093048, lng: 6.842120};
 </script>
 
 <template>
@@ -28,7 +30,15 @@ const myArray = ref([
       </draggable>
     </div>
 
-    <div class="flex-1">My content</div>
+    <div class="flex-1">
+      <GMapMap
+          :center="center"
+          :zoom="7"
+          map-type-id="terrain"
+          style="width: 100vw; height: 900px"
+      >
+      </GMapMap>
+    </div>
   </div>
 </template>
 
