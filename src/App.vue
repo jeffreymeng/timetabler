@@ -73,11 +73,7 @@ onMounted(() => initMap());
             >
               <Lock v-model="element.locked" />
             </div>
-            <PlacesAutocomplete
-              v-model="element.name"
-              class="p-2 rounded w-full border border-gray-200"
-              ref="lastAddedInput"
-            />
+            <PlacesAutocomplete v-model="element.name" ref="lastAddedInput" />
           </div>
         </template>
       </draggable>
