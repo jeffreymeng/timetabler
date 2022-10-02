@@ -2,6 +2,7 @@
 import { defineProps, defineEmits } from "vue";
 const props = defineProps<{
   modelValue: boolean;
+  disabled: boolean;
 }>();
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void;
@@ -13,13 +14,13 @@ const handleEvent = () => {
 </script>
 
 <template>
-  <button @click="handleEvent">
+  <button @click="handleEvent" :disabled="props.disabled">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       view-box="0 0 20 20"
       fill="currentColor"
       class="w-5 h-5"
-      v-if="props.modelValue"
+      v-if="props.modelValue || props.disabled"
     >
       <path
         fill-rule="evenodd"

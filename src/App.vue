@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Loader } from "@googlemaps/js-api-loader";
 import draggable from "vuedraggable";
-import { nextTick, ref } from "vue";
+import { nextTick, ref, watchEffect } from "vue";
 import Lock from "./components/Lock.vue";
 import { onMounted } from "vue";
 import PlacesAutocomplete from "./components/PlacesAutocomplete.vue";
+import { XMarkIcon } from "@heroicons/vue/20/solid";
 
 const stops = ref([
   { name: "Cupertino, CA", id: 0, locked: true },
@@ -16,6 +17,7 @@ const stops = ref([
   { name: "Stinson Beach, CA", id: 6, locked: false },
   { name: "Oakland, CA", id: 7, locked: true },
 ]);
+const departureTime = ref("");
 
 const update = ref();
 const mapURL = ref();
@@ -181,14 +183,28 @@ onMounted(() => initMap());
     <div className="w-96">
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="stops" item-key="id" ghost-class="ghost">
-        <template #item="{ element }">
+        <template #item="{ element, index }">
           <div class="px-2 my-2 flex items-start">
             <div
-              class="h-10 w-10 flex items-center justify-center text-gray-400"
+              class="h-10 w-10 flex items-center justify-center"
+              :class="[
+                index !== 0 && index !== stops.length - 1
+                  ? 'text-gray-400'
+                  : 'text-gray-200',
+              ]"
             >
-              <Lock v-model="element.locked" />
+              <Lock
+                v-model="element.locked"
+                :disabled="index === 0 || index === stops.length - 1"
+              />
             </div>
             <PlacesAutocomplete v-model="element.name" ref="lastAddedInput" />
+            <button
+              class="h-10 w-10 flex items-center justify-center text-gray-400"
+              @click="stops.splice(index, 1)"
+            >
+              <XMarkIcon class="h-5 w-5" />
+            </button>
           </div>
         </template>
       </draggable>
@@ -216,6 +232,24 @@ onMounted(() => initMap());
         >
           Open in Google Maps
         </a>
+      </div>
+      <div class="ml-10 mr-2">
+        <div class="p-2">
+          <label
+            for="departureTime"
+            class="block text-sm font-medium text-gray-700"
+            >Departure Time</label
+          >
+          <div class="mt-1">
+            <input
+              type="time"
+              name="departureTime"
+              id="departureTime"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              v-model="departureTime"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
