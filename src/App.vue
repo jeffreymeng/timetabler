@@ -19,6 +19,10 @@ const stops = ref([
   { name: "Oakland, CA", id: 7, locked: true },
 ]);
 const departureTime = ref("");
+const timetableValue = ref(`Nathan Wang: 10:05am
+Jeffrey Meng: 10:08am
+Edwin Xie: 10:31am
+10355 Tonita Way: 12:45pm`);
 
 const update = ref();
 const mapURL = ref();
@@ -110,6 +114,19 @@ onMounted(() => initMap(stops, update, mapURL));
             />
           </div>
         </div>
+      </div>
+
+      <hr class="my-8" />
+
+      <div className="m-4 font-bold text-lg">Timetable</div>
+      <div class="m-4">
+        <textarea
+          :rows="timetableValue.split('\n').length"
+          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          :value="timetableValue"
+          :readonly="true"
+          @focus="$event.target.select()"
+        />
       </div>
     </div>
 
