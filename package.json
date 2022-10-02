@@ -12,6 +12,8 @@
   "dependencies": {
     "@fawmi/vue-google-maps": "0.9.67",
     "@googlemaps/js-api-loader": "^1.14.3",
+    "@headlessui/vue": "^1.7.3",
+    "@heroicons/vue": "^2.0.11",
     "pinia": "^2.0.21",
     "vue": "^3.2.38",
     "vuedraggable": "^4.1.0"

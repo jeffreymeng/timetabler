@@ -4,6 +4,7 @@ import draggable from "vuedraggable";
 import { nextTick, ref } from "vue";
 import Lock from "./components/Lock.vue";
 import { onMounted } from "vue";
+import PlacesAutocomplete from "./components/PlacesAutocomplete.vue";
 
 const stops = ref([
   { name: "Cupertino, CA", id: 0, locked: true },
@@ -19,13 +20,15 @@ const stops = ref([
 const update = ref();
 
 // lmao idk if this actually works
-const lastAddedInput = ref<HTMLInputElement | null>(null);
+const lastAddedInput = ref<{ inputRef: { value: HTMLInputElement } } | null>(
+  null
+);
 
 const center = { lat: 51.093048, lng: 6.84212 };
 
 const handleAddDestination = () => {
   stops.value.push({ name: "", id: Math.random(), locked: false });
-  nextTick(() => lastAddedInput.value!.focus());
+  nextTick(() => lastAddedInput.value!.inputRef.el.focus());
 };
 
 function initMap() {
@@ -48,7 +51,6 @@ function initMap() {
     stops: string[],
     destination: string
   ): Promise<number[]> {
-    console.log(start, stops, destination);
     return new Promise((res, rej) => {
       directionsService.route(
         {
@@ -80,7 +82,6 @@ function initMap() {
     center: { lat: -34.397, lng: 150.644 },
     zoom: 8,
   });
-
   directionsRenderer.setMap(map);
 
   if (!stops.value || stops.value.length < 2) {
@@ -98,7 +99,6 @@ function initMap() {
               i,
               arr
             ) => {
-              console.log(acc, name)
               // create a new group if it's locked or if the previous element is locked.
               if (
                 i === 0 ||
@@ -132,7 +132,6 @@ function initMap() {
     ).flat();
 
     const optimizedStops = optimizedOrder.map((i) => stops.value[i].name);
-    console.log(optimizedStops);
     const request = {
       origin: optimizedStops[0],
       waypoints: optimizedStops
@@ -145,6 +144,11 @@ function initMap() {
         departureTime: new Date(Date.now() + 24 * 60 * 1000), // for the time N milliseconds from now.
       },
     };
+    directionsService.route(request as any, function (result, status) {
+      if (status == "OK") {
+        directionsRenderer.setDirections(result);
+      }
+    });
 
     await directionsService.route(request as any, function (result, status) {
       if (status == "OK") {
@@ -172,11 +176,7 @@ onMounted(() => initMap());
             >
               <Lock v-model="element.locked" />
             </div>
-            <input
-              v-model="element.name"
-              class="p-2 rounded w-full border border-gray-200"
-              ref="lastAddedInput"
-            />
+            <PlacesAutocomplete v-model="element.name" ref="lastAddedInput" />
           </div>
         </template>
       </draggable>
