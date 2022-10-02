@@ -1,6 +1,9 @@
+
+
 <script setup lang="ts">
+import { Loader } from '@googlemaps/js-api-loader';
 import draggable from "vuedraggable";
-import { nextTick, ref } from "vue";
+import { effect, nextTick, ref } from "vue";
 import Lock from "./components/Lock.vue";
 
 const myArray = ref([
@@ -15,19 +18,48 @@ const lastAddedInput = ref<HTMLInputElement | null>(null);
 const center = { lat: 51.093048, lng: 6.84212 };
 
 const handleAddDestination = () => {
-  myArray.value.push({ name: "", id: Math.random() });
+  myArray.value.push({ name: "", id: Math.random(), locked: false });
   nextTick(() => lastAddedInput.value!.focus());
 };
 
-const mapParams = ref(
-  new URLSearchParams({
-    key: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
-    origin: "Oslo+Norway",
-    destination: "Telemark+Norway",
-    avoid: "tolls|highways",
-    mode: "driving",
-  }).toString()
-);
+
+function initMap() {
+
+
+  new Loader({
+  apiKey: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
+  version: "weekly",
+  libraries: ["places"]
+}).load()
+  .then((google) => {
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+
+
+    const map = new google.maps.Map(document.getElementById("map")!, {
+      center: { lat: -34.397, lng: 150.644 },
+      zoom: 8,
+    });
+    directionsRenderer.setMap(map);
+
+    var request = {
+      origin: "Cupertino, CA",
+      destination: "San Fransisco, CA",
+      travelMode: google.maps.TravelMode.DRIVING
+    };
+    directionsService.route(request as any, function(result, status) {
+      if (status == 'OK') {
+        directionsRenderer.setDirections(result);
+      }
+    });
+
+  })
+  .catch(e => {
+   console.log(e)
+  });
+}
+
+initMap();
 </script>
 
 <template>
@@ -45,7 +77,6 @@ const mapParams = ref(
                 v-if="index !== 0 && index !== myArray.length - 1"
               />
             </div>
-
             <input
               v-model="element.name"
               class="p-2 rounded w-full border border-gray-200"
@@ -65,10 +96,11 @@ const mapParams = ref(
     </div>
 
     <div class="flex-1">
-      <iframe
-        class="h-screen w-full"
-        :src="`https://www.google.com/maps/embed/v1/directions?${mapParams}`"
-      ></iframe>
+      <div
+        id="map"
+        style="width: 100%; height: 100vh"
+      >
+    </div>
     </div>
   </div>
 </template>

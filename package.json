@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@fawmi/vue-google-maps": "0.9.67",
+    "@googlemaps/js-api-loader": "^1.14.3",
     "pinia": "^2.0.21",
     "vue": "^3.2.38",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
+    "@types/google.maps": "^3.50.2",
     "@types/node": "^16.11.56",
     "@vitejs/plugin-vue": "^3.0.3",
     "@vitejs/plugin-vue-jsx": "^2.0.1",
