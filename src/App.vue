@@ -170,12 +170,20 @@ onMounted(() => initMap());
     <div className="w-96">
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="stops" item-key="id" ghost-class="ghost">
-        <template #item="{ element }">
+        <template #item="{ element, index }">
           <div class="px-2 my-2 mr-2 flex items-start">
             <div
-              class="h-10 w-10 flex items-center justify-center text-gray-400"
+              class="h-10 w-10 flex items-center justify-center"
+              :class="[
+                index !== 0 && index !== stops.length - 1
+                  ? 'text-gray-400'
+                  : 'text-gray-200',
+              ]"
             >
-              <Lock v-model="element.locked" />
+              <Lock
+                v-model="element.locked"
+                :disabled="index === 0 || index === stops.length - 1"
+              />
             </div>
             <PlacesAutocomplete v-model="element.name" ref="lastAddedInput" />
           </div>
