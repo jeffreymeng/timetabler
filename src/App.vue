@@ -35,12 +35,15 @@ const mapParams = ref(
     <div className="w-96">
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="myArray" item-key="id" ghost-class="ghost">
-        <template #item="{ element }">
+        <template #item="{ element, index }">
           <div class="px-2 my-2 flex items-start">
             <div
               class="h-10 w-10 flex items-center justify-center text-gray-400"
             >
-              <Lock v-model="element.locked" />
+              <Lock
+                v-model="element.locked"
+                v-if="index !== 0 && index !== myArray.length - 1"
+              />
             </div>
 
             <input
