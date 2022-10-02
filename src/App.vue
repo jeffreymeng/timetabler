@@ -19,15 +19,14 @@ const handleAddDestination = () => {
 };
 
 const mapParams = ref(
-        new URLSearchParams({
-          key: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
-          origin: "Oslo+Norway",
-          destination: "Telemark+Norway",
-          avoid: "tolls|highways",
-          mode: "driving",
-        }).toString()
-      )
-
+  new URLSearchParams({
+    key: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
+    origin: "Oslo+Norway",
+    destination: "Telemark+Norway",
+    avoid: "tolls|highways",
+    mode: "driving",
+  }).toString()
+);
 </script>
 
 <template>
@@ -42,7 +41,7 @@ const mapParams = ref(
                 class="inline-block h-4 w-4 border border-gray-300 rounded-full"
               ></span>
             </div>
-            
+
             <input
               v-model="element.name"
               class="p-2 rounded w-full border border-gray-200"
@@ -62,7 +61,10 @@ const mapParams = ref(
     </div>
 
     <div class="flex-1">
-      <iframe class="h-full w-full" :src="`https://www.google.com/maps/embed/v1/directions?${mapParams}`"></iframe>
+      <iframe
+        class="h-screen w-full"
+        :src="`https://www.google.com/maps/embed/v1/directions?${mapParams}`"
+      ></iframe>
     </div>
   </div>
 </template>
