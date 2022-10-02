@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@fawmi/vue-google-maps": "^0.9.79",
+    "@fawmi/vue-google-maps": "0.9.67",
     "pinia": "^2.0.21",
     "vue": "^3.2.38",
     "vuedraggable": "^4.1.0"
