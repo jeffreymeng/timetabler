@@ -5,6 +5,7 @@ import { nextTick, ref, watchEffect } from "vue";
 import Lock from "./components/Lock.vue";
 import { onMounted } from "vue";
 import PlacesAutocomplete from "./components/PlacesAutocomplete.vue";
+import { XMarkIcon } from "@heroicons/vue/20/solid";
 
 const stops = ref([
   { name: "Cupertino, CA", id: 0, locked: true },
@@ -171,7 +172,7 @@ onMounted(() => initMap());
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="stops" item-key="id" ghost-class="ghost">
         <template #item="{ element, index }">
-          <div class="px-2 my-2 mr-2 flex items-start">
+          <div class="px-2 my-2 flex items-start">
             <div
               class="h-10 w-10 flex items-center justify-center"
               :class="[
@@ -186,6 +187,12 @@ onMounted(() => initMap());
               />
             </div>
             <PlacesAutocomplete v-model="element.name" ref="lastAddedInput" />
+            <button
+              class="h-10 w-10 flex items-center justify-center text-gray-400"
+              @click="stops.splice(index, 1)"
+            >
+              <XMarkIcon class="h-5 w-5" />
+            </button>
           </div>
         </template>
       </draggable>
