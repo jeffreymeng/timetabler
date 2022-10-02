@@ -21,8 +21,9 @@ const center = { lat: 51.093048, lng: 6.84212 };
             <div class="h-10 w-10 flex items-center justify-center">
               <span
                 class="inline-block h-4 w-4 border border-gray-300 rounded-full"
-              />
+              ></span>
             </div>
+            
             <input
               v-model="element.name"
               class="p-2 rounded w-full border border-gray-200"
@@ -33,12 +34,15 @@ const center = { lat: 51.093048, lng: 6.84212 };
     </div>
 
     <div class="flex-1">
-      <GMapMap
-        :center="center"
-        :zoom="7"
-        gesture-handling="greedy"
-              >
-      </GMapMap>
+      <iframe class="h-full w-full" :src="`https://www.google.com/maps/embed/v1/directions?${
+        new URLSearchParams({
+          key: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
+          origin: "Oslo+Norway",
+          destination: "Telemark+Norway",
+          avoid: "tolls|highways",
+          mode: "driving",
+        }).toString()
+      }`"></iframe>
     </div>
   </div>
 </template>
