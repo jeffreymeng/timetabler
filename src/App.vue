@@ -18,6 +18,7 @@ const stops = ref([
 ]);
 
 const update = ref();
+const mapURL = ref();
 
 // lmao idk if this actually works
 const lastAddedInput = ref<{ inputRef: { value: HTMLInputElement } } | null>(
@@ -144,15 +145,26 @@ function initMap() {
         departureTime: new Date(Date.now() + 24 * 60 * 1000), // for the time N milliseconds from now.
       },
     };
-    directionsService.route(request as any, function (result, status) {
-      if (status == "OK") {
-        directionsRenderer.setDirections(result);
-      }
-    });
 
     await directionsService.route(request as any, function (result, status) {
+      console.log(result);
       if (status == "OK") {
         directionsRenderer.setDirections(result);
+        mapURL.value =
+          "https://www.google.com/maps/dir/?api=1&" +
+          new URLSearchParams({
+            origin: optimizedStops[0],
+            origin_place_id: result?.geocoded_waypoints?.at(0)?.place_id || "",
+            destination: optimizedStops.at(-1) || "",
+            destination_place_id:
+              result?.geocoded_waypoints?.at(-1)?.place_id || "",
+            waypoints: optimizedStops.slice(1, -1).join("|") || "",
+            waypoints_place_ids:
+              result?.geocoded_waypoints
+                ?.slice(1, -1)
+                .map((wp) => wp.place_id)
+                .join("|") || "",
+          }).toString();
       }
     });
   };
@@ -195,6 +207,15 @@ onMounted(() => initMap());
         >
           Optimize Route
         </button>
+      </div>
+      <div class="ml-10">
+        <a
+          className="p-2 font-medium text-gray-600 hover:text-black"
+          :href="mapURL"
+          target="_blank"
+        >
+          Open in Google Maps
+        </a>
       </div>
     </div>
 
