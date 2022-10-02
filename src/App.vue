@@ -17,6 +17,17 @@ const handleAddDestination = () => {
   myArray.value.push({ name: "", id: Math.random() });
   nextTick(() => lastAddedInput.value!.focus());
 };
+
+const mapParams = ref(
+        new URLSearchParams({
+          key: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
+          origin: "Oslo+Norway",
+          destination: "Telemark+Norway",
+          avoid: "tolls|highways",
+          mode: "driving",
+        }).toString()
+      )
+
 </script>
 
 <template>
@@ -51,15 +62,7 @@ const handleAddDestination = () => {
     </div>
 
     <div class="flex-1">
-      <iframe class="h-full w-full" :src="`https://www.google.com/maps/embed/v1/directions?${
-        new URLSearchParams({
-          key: "AIzaSyDbDbQCr2WO9glUq_LCf9J_fSiqKGKR5JY",
-          origin: "Oslo+Norway",
-          destination: "Telemark+Norway",
-          avoid: "tolls|highways",
-          mode: "driving",
-        }).toString()
-      }`"></iframe>
+      <iframe class="h-full w-full" :src="`https://www.google.com/maps/embed/v1/directions?${mapParams}`"></iframe>
     </div>
   </div>
 </template>
