@@ -12,7 +12,7 @@ const center = { lat: 51.093048, lng: 6.84212 };
 </script>
 
 <template>
-  <div class="h-full flex">
+  <div class="flex">
     <div className="w-96">
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="myArray" item-key="id" ghost-class="ghost">
@@ -36,8 +36,9 @@ const center = { lat: 51.093048, lng: 6.84212 };
       <GMapMap
         :center="center"
         :zoom="7"
-        gesture-handling="greedy"
-              >
+        map-type-id="terrain"
+        style="width: 100%; height: 100vh"
+      >
       </GMapMap>
     </div>
   </div>
