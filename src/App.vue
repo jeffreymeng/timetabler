@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import draggable from "vuedraggable";
 import { nextTick, ref } from "vue";
+import Lock from "./components/Lock.vue";
 
 const myArray = ref([
-  { name: "10355 Tonita Way, Cupertino, CA 95014", id: 0 },
-  { name: "22562 Alcade Road, Cupertino, CA 95014", id: 1 },
-  { name: "12345 Rainbow Drive, Cupertino, CA 95014", id: 2 },
+  { name: "10355 Tonita Way, Cupertino, CA 95014", id: 0, locked: false },
+  { name: "22562 Alcade Road, Cupertino, CA 95014", id: 1, locked: false },
+  { name: "12345 Rainbow Drive, Cupertino, CA 95014", id: 2, locked: true },
 ]);
 
 // lmao idk if this actually works
@@ -36,10 +37,10 @@ const mapParams = ref(
       <draggable v-model="myArray" item-key="id" ghost-class="ghost">
         <template #item="{ element }">
           <div class="px-2 my-2 flex items-start">
-            <div class="h-10 w-10 flex items-center justify-center">
-              <span
-                class="inline-block h-4 w-4 border border-gray-300 rounded-full"
-              ></span>
+            <div
+              class="h-10 w-10 flex items-center justify-center text-gray-400"
+            >
+              <Lock v-model="element.locked" />
             </div>
 
             <input
