@@ -3,7 +3,8 @@ import type { Ref } from "vue";
 export default function initMap(
   stops: Ref<{ name: string; id: number; locked: boolean }[]>,
   update: Ref<any>,
-  mapURL: Ref<any>
+  mapURL: Ref<any>,
+  timetableValue: Ref<any>
 ) {
   // basically, we split up the destinations into 'groups', where groups contain stops which need their order
   // to be optimized within the groups. We then optimize the order of each of the groups individually,
@@ -114,7 +115,7 @@ export default function initMap(
       destination: optimizedStops.at(-1),
       travelMode: google.maps.TravelMode.DRIVING,
       drivingOptions: {
-        departureTime: new Date(Date.now() + 24 * 60 * 1000), // for the time N milliseconds from now.
+        departureTime: new Date(Date.now()), // for the time N milliseconds from now.
       },
     };
 

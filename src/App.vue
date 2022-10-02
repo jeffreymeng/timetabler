@@ -39,7 +39,7 @@ const handleAddDestination = () => {
   nextTick(() => lastAddedInput.value!.inputRef.el.focus());
 };
 
-onMounted(() => initMap(stops, update, mapURL));
+onMounted(() => initMap(stops, update, mapURL, timetableValue));
 </script>
 
 <template>
@@ -97,37 +97,37 @@ onMounted(() => initMap(stops, update, mapURL));
           Open in Google Maps
         </a>
       </div>
-      <div class="ml-10 mr-2">
-        <div class="p-2">
-          <label
-            for="departureTime"
-            class="block text-sm font-medium text-gray-700"
-            >Departure Time</label
-          >
-          <div class="mt-1">
-            <input
-              type="time"
-              name="departureTime"
-              id="departureTime"
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              v-model="departureTime"
-            />
-          </div>
-        </div>
-      </div>
+<!--      <div class="ml-10 mr-2">-->
+<!--        <div class="p-2">-->
+<!--          <label-->
+<!--            for="departureTime"-->
+<!--            class="block text-sm font-medium text-gray-700"-->
+<!--            >Departure Time</label-->
+<!--          >-->
+<!--          <div class="mt-1">-->
+<!--            <input-->
+<!--              type="time"-->
+<!--              name="departureTime"-->
+<!--              id="departureTime"-->
+<!--              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"-->
+<!--              v-model="departureTime"-->
+<!--            />-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <hr class="my-8" />
 
-      <div className="m-4 font-bold text-lg">Timetable</div>
-      <div class="m-4">
-        <textarea
-          :rows="timetableValue.split('\n').length"
-          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          :value="timetableValue"
-          :readonly="true"
-          @focus="$event.target.select()"
-        />
-      </div>
+<!--      <div className="m-4 font-bold text-lg">Timetable</div>-->
+<!--      <div class="m-4">-->
+<!--        <textarea-->
+<!--          :rows="timetableValue.split('\n').length"-->
+<!--          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"-->
+<!--          :value="timetableValue"-->
+<!--          :readonly="true"-->
+<!--          @focus="$event.target.select()"-->
+<!--        />-->
+<!--      </div>-->
     </div>
 
     <div class="flex-1">
