@@ -108,7 +108,7 @@
             className="p-2 font-medium text-gray-600 hover:text-black"
             @click="update()"
           >
-            op. rt.
+            Optimize Route
           </button>
         </div>
       </div>
