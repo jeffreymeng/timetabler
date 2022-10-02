@@ -3,7 +3,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import draggable from "vuedraggable";
 import { nextTick, ref } from "vue";
 import Lock from "./components/Lock.vue";
-import { onMounted } from 'vue'
+import { onMounted } from "vue";
 
 const stops = ref([
   { name: "10355 Tonita Way, Cupertino, CA 95014", id: 0, locked: true },
@@ -24,42 +24,115 @@ const handleAddDestination = () => {
 };
 
 function initMap() {
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
 
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-
-    const map = new google.maps.Map(document.getElementById("map")!, {
-      center: { lat: -34.397, lng: 150.644 },
-      zoom: 8,
-    });
-    directionsRenderer.setMap(map);
-
-    if (!stops.value || stops.value.length < 2) {
-      throw new Error("Fewer than two stops!");
-    }
-    const calculateRoute = () => {
-      var request = {
-        origin: stops.value[0].name,
-        waypoints: stops.value
-          .slice(1, -1)
-          .map((stop) => ({ location: stop.name })),
-        optimizeWaypoints: true,
-        destination: stops.value[stops.value.length - 1].name,
-        travelMode: google.maps.TravelMode.DRIVING,
-      };
-      directionsService.route(request as any, function (result, status) {
-        if (status == "OK") {
-          directionsRenderer.setDirections(result);
+  /**
+   * Optimizes the order of an array containing two or more destinations.
+   * The first and last element will always remain the same, while the middle
+   * elements will be reordered to minimize driving time.
+   * @param stops - An array of stops.
+   * @returns result - An array with the index of each stop from `stops`, ordered in the optimal order.
+   */
+  async function optimizeOrder(stops: string[]): Promise<number[]> {
+    return new Promise((res, rej) => {
+      directionsService.route(
+        {
+          origin: stops[0],
+          waypoints: stops.slice(1, -1).map((stop) => ({ location: stop })),
+          optimizeWaypoints: true,
+          destination: stops[stops.length - 1],
+          travelMode: google.maps.TravelMode.DRIVING,
+          drivingOptions: {
+            departureTime: new Date(Date.now() + 24 * 60 * 1000), // for the time N milliseconds from now.
+          },
+        },
+        function (result, status) {
+          if (status == "OK") {
+            if (!result) {
+              alert("Error: Unable to calculate route.");
+              return rej("No results found.");
+            }
+            return res(result.routes[0].waypoint_order);
+          } else {
+            return rej(result);
+          }
         }
-      });
+      );
+    });
+  }
+
+  const map = new google.maps.Map(document.getElementById("map")!, {
+    center: { lat: -34.397, lng: 150.644 },
+    zoom: 8,
+  });
+
+  directionsRenderer.setMap(map);
+
+  if (!stops.value || stops.value.length < 2) {
+    throw new Error("Fewer than two stops!");
+  }
+
+  const calculateRoute = async () => {
+    const optimizedOrder = (
+      await Promise.all(
+        stops.value
+          .reduce(
+            (
+              acc: { name: string; i: number }[][],
+              { name, locked },
+              i,
+              arr
+            ) => {
+              if (i === 0 || i === arr.length - 1 || locked) {
+                return [...acc, [{ name, i }]] as {
+                  name: string;
+                  i: number;
+                }[][];
+              }
+              return [...acc.slice(0, -1), [...acc.slice(-1), { name, i }]] as {
+                name: string;
+                i: number;
+              }[][];
+            },
+            []
+          )
+          .map((arr) => {
+            if (arr.length > 1) {
+              return optimizeOrder(arr.map((el) => el.name)).then((order) =>
+                order.map((i) => arr[i].i)
+              );
+            }
+            return Promise.resolve(arr[0].i);
+          })
+      )
+    ).flat();
+
+    const optimizedStops = optimizedOrder.map(i => stops.value[i].name);
+
+    const request = {
+      origin: optimizedStops[0],
+      waypoints: optimizedStops.slice(1, -1),
+      optimizeWaypoints: false,
+      destination: optimizedStops.at(-1),
+      travelMode: google.maps.TravelMode.DRIVING,
+      drivingOptions: {
+        departureTime: new Date(Date.now() + 24 * 60 * 1000), // for the time N milliseconds from now.
+      },
     };
 
-    calculateRoute();
-    update.value = calculateRoute;
+    await directionsService.route(request as any, function (result, status) {
+      if (status == "OK") {
+        directionsRenderer.setDirections(result);
+      }
+    });
+  };
 
+  calculateRoute();
+  update.value = calculateRoute;
 }
 
-onMounted(() => initMap())
+onMounted(() => initMap());
 </script>
 
 <template>
