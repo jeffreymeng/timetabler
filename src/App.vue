@@ -3,7 +3,8 @@ import { Loader } from "@googlemaps/js-api-loader";
 import draggable from "vuedraggable";
 import { nextTick, ref } from "vue";
 import Lock from "./components/Lock.vue";
-import { onMounted } from 'vue'
+import { onMounted } from "vue";
+import PlacesAutocomplete from "./components/PlacesAutocomplete.vue";
 
 const stops = ref([
   { name: "10355 Tonita Way, Cupertino, CA 95014", id: 0, locked: true },
@@ -24,42 +25,40 @@ const handleAddDestination = () => {
 };
 
 function initMap() {
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
 
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
+  const map = new google.maps.Map(document.getElementById("map")!, {
+    center: { lat: -34.397, lng: 150.644 },
+    zoom: 8,
+  });
+  directionsRenderer.setMap(map);
 
-    const map = new google.maps.Map(document.getElementById("map")!, {
-      center: { lat: -34.397, lng: 150.644 },
-      zoom: 8,
-    });
-    directionsRenderer.setMap(map);
-
-    if (!stops.value || stops.value.length < 2) {
-      throw new Error("Fewer than two stops!");
-    }
-    const calculateRoute = () => {
-      var request = {
-        origin: stops.value[0].name,
-        waypoints: stops.value
-          .slice(1, -1)
-          .map((stop) => ({ location: stop.name })),
-        optimizeWaypoints: true,
-        destination: stops.value[stops.value.length - 1].name,
-        travelMode: google.maps.TravelMode.DRIVING,
-      };
-      directionsService.route(request as any, function (result, status) {
-        if (status == "OK") {
-          directionsRenderer.setDirections(result);
-        }
-      });
+  if (!stops.value || stops.value.length < 2) {
+    throw new Error("Fewer than two stops!");
+  }
+  const calculateRoute = () => {
+    var request = {
+      origin: stops.value[0].name,
+      waypoints: stops.value
+        .slice(1, -1)
+        .map((stop) => ({ location: stop.name })),
+      optimizeWaypoints: true,
+      destination: stops.value[stops.value.length - 1].name,
+      travelMode: google.maps.TravelMode.DRIVING,
     };
+    directionsService.route(request as any, function (result, status) {
+      if (status == "OK") {
+        directionsRenderer.setDirections(result);
+      }
+    });
+  };
 
-    calculateRoute();
-    update.value = calculateRoute;
-
+  calculateRoute();
+  update.value = calculateRoute;
 }
 
-onMounted(() => initMap())
+onMounted(() => initMap());
 </script>
 
 <template>
@@ -74,7 +73,7 @@ onMounted(() => initMap())
             >
               <Lock v-model="element.locked" />
             </div>
-            <input
+            <PlacesAutocomplete
               v-model="element.name"
               class="p-2 rounded w-full border border-gray-200"
               ref="lastAddedInput"
