@@ -17,7 +17,12 @@ const center = { lat: 51.093048, lng: 6.84212 };
       <div className="m-4 font-bold text-lg">Destinations</div>
       <draggable v-model="myArray" item-key="id" ghost-class="ghost">
         <template #item="{ element }">
-          <div class="m-2">
+          <div class="px-2 my-2 flex items-start">
+            <div class="h-10 w-10 flex items-center justify-center">
+              <span
+                class="inline-block h-4 w-4 border border-gray-300 rounded-full"
+              />
+            </div>
             <input
               v-model="element.name"
               class="p-2 rounded w-full border border-gray-200"
@@ -32,7 +37,7 @@ const center = { lat: 51.093048, lng: 6.84212 };
         :center="center"
         :zoom="7"
         map-type-id="terrain"
-        style="width: 100vw; height: 900px"
+        style="width: 100%; height: 900px"
       >
       </GMapMap>
     </div>
@@ -42,6 +47,6 @@ const center = { lat: 51.093048, lng: 6.84212 };
 <style scoped>
 .ghost {
   opacity: 0.5;
-  background: #c8ebfb;
+  background: theme("colors.gray.200");
 }
 </style>
